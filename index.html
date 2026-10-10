@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>クリーンリンク</title>
+<meta name="description" content="共有リンクから個人を特定できる情報や無駄な文字を消す。端末内だけで処理、通信なし。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="クリーンリンク">
+<style>
+:root{--bg:#f6f7f6;--fg:#14211f;--mut:#5b6b68;--card:#fff;--line:#d9e0de;--acc:#0f766e;--accfg:#fff;--ok:#0f766e;--warn:#92400e;--warnbg:#fef3c7}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--fg:#e6efed;--mut:#93a5a1;--card:#17211f;--line:#2a3835;--acc:#2dd4bf;--accfg:#04201c;--ok:#2dd4bf;--warn:#fde68a;--warnbg:#3a2e0c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{max-width:640px;margin:0 auto}
+h1{font-size:1.4rem;margin:8px 0 2px}
+.sub{color:var(--mut);margin:0 0 16px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:10px;padding:10px;background:transparent;color:var(--fg);font:inherit;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button{font:inherit;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer}
+button.p{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:600}
+.out{word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:.95rem;padding:10px;border-radius:10px;background:var(--bg)}
+.lab{font-size:.8rem;color:var(--mut);margin:0 0 4px}
+.ok{color:var(--ok);font-size:.9rem;min-height:1.4em;margin-top:8px}
+.note{background:var(--warnbg);color:var(--warn);padding:8px 10px;border-radius:10px;font-size:.9rem;margin-top:8px}
+details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+details p,details li{color:var(--mut);font-size:.92rem}
+ol{padding-left:1.2em;margin:6px 0}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>クリーンリンク</h1>
+<p class="sub">共有リンクから、アカウントが特定される情報や無駄な文字を消します。処理は基本的に端末内だけで行います。</p>
+
+<div class="card">
+  <textarea id="in" placeholder="ここにリンク(や共有文)を貼り付け" aria-label="リンクを貼り付け"></textarea>
+  <div class="row">
+    <button class="p" id="paste">貼り付けて整形</button>
+    <button id="clear">クリア</button>
+  </div>
+</div>
+
+<div class="card hidden" id="res">
+  <p class="lab">整形後</p>
+  <div class="out" id="out"></div>
+  <p class="lab" style="margin-top:10px" id="rmlab"></p>
+  <div id="notes"></div>
+  <div class="row">
+    <button class="p" id="copy">コピー</button>
+    <button id="share">共有</button>
+    <button id="open">開いて確認</button>
+  </div>
+  <div class="ok" id="msg" role="status"></div>
+</div>
+
+<div class="card">
+  <details>
+    <summary>Android:共有メニューに追加</summary>
+    <ol>
+      <li>Chromeでこのページを開き、メニューから「ホーム画面に追加」(インストール)。</li>
+      <li>以後、Instagram等の共有メニューに「クリーンリンク」が出ます。選ぶと整形してコピーします。</li>
+    </ol>
+  </details>
+  <details>
+    <summary>iPhone:ホーム画面+共有メニュー</summary>
+    <p>ホーム画面に追加:Safariの共有ボタン → ホーム画面に追加。</p>
+    <p>共有メニューから使う(ショートカットアプリで1回だけ作成):</p>
+    <ol>
+      <li>ショートカットを新規作成し、名前を「クリーンリンク」にする。</li>
+      <li>詳細で「共有シートに表示」をオン、受け取る種類はURLとテキスト。</li>
+      <li>アクション「URLエンコード」→入力は「ショートカットの入力」。</li>
+      <li>アクション「URL」→ このページのアドレス + <code>?url=</code> + URLエンコード結果。</li>
+      <li>アクション「URLを開く」。</li>
+    </ol>
+  </details>
+  <details>
+    <summary>消すもの</summary>
+    <p>Instagram・X・TikTokの共有者ID(igshなど)、Amazonの検索経路とタグ(/dp/商品IDだけに)、YouTubeのsi、utm_・fbclid・gclidなどの追跡用パラメータ、リンク前後の余計な文字。</p>
+    <p>短縮リンク(amzn.toなど)だけは、展開のためリンクを展開用サーバー(Cloudflare Workers、保存・記録なし)に送ります。それ以外のリンクはどこにも送信しません。</p>
+  </details>
+</div>
+</main>
+<script type="module">
+import { cleanUrl, isShort } from './clean.js';
+const EXPAND = 'https://clean-link-expand.uyu-tools.workers.dev/';
+const $ = id => document.getElementById(id);
+let cur = '';
+const say = t => { $('msg').textContent = t; };
+
+async function render(raw, auto) {
+  let r = cleanUrl(raw);
+  if (!r.error && isShort(r.before)) {
+    say('短縮リンクを展開中…');
+    try {
+      const j = await (await fetch(EXPAND + '?u=' + encodeURIComponent(r.before))).json();
+      if (j.url) { const r2 = cleanUrl(j.url); if (!r2.error) r = { ...r2, before: r.before, removed: r.before.length - r2.url.length, notes: [] }; }
+    } catch {}
+  }
+  $('res').classList.remove('hidden');
+  $('notes').replaceChildren();
+  if (r.error) { cur = ''; $('out').textContent = r.error; $('rmlab').textContent = ''; say(''); return; }
+  cur = r.url;
+  $('out').textContent = r.url;
+  $('rmlab').textContent = r.removed > 0 ? `${r.removed}文字を削除しました` : '削除するものはありませんでした';
+  for (const n of r.notes) { const d = document.createElement('div'); d.className = 'note'; d.textContent = n; $('notes').append(d); }
+  say('');
+  if (auto) copy(true);
+}
+async function copy(auto) {
+  if (!cur) return;
+  try { await navigator.clipboard.writeText(cur); say('コピーしました'); }
+  catch { say(auto ? 'ボタンを押してコピーしてください' : 'コピーできませんでした。長押しで選択してください'); }
+}
+$('in').addEventListener('input', e => { if (e.target.value.trim()) render(e.target.value); else $('res').classList.add('hidden'); });
+$('paste').onclick = async () => {
+  try { const t = await navigator.clipboard.readText(); $('in').value = t; render(t); }
+  catch { say('貼り付けできません。入力欄に直接貼ってください'); $('res').classList.remove('hidden'); }
+};
+$('clear').onclick = () => { $('in').value = ''; $('res').classList.add('hidden'); };
+$('copy').onclick = () => copy(false);
+$('share').onclick = async () => {
+  if (!cur) return;
+  if (navigator.share) { try { await navigator.share({ url: cur }); } catch {} }
+  else say('このブラウザは共有に対応していません');
+};
+$('open').onclick = () => { if (cur) window.open(cur, '_blank', 'noopener,noreferrer'); };
+
+// 共有メニュー/ショートカットから来た場合は自動で整形
+const q = new URLSearchParams(location.search);
+const shared = [q.get('url'), q.get('text'), q.get('title')].filter(Boolean).join(' ');
+if (shared) {
+  $('in').value = shared;
+  render(shared, true);
+  history.replaceState(null, '', location.pathname);
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
