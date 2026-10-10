@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="クリーンリンク">
 <style>
-:root{--bg:#f6f7f6;--fg:#14211f;--mut:#5b6b68;--card:#fff;--line:#d9e0de;--acc:#0f766e;--accfg:#fff;--ok:#0f766e;--warn:#92400e;--warnbg:#fef3c7}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--fg:#e6efed;--mut:#93a5a1;--card:#17211f;--line:#2a3835;--acc:#2dd4bf;--accfg:#04201c;--ok:#2dd4bf;--warn:#fde68a;--warnbg:#3a2e0c}}
+:root{--bg:#f6f7f6;--fg:#14211f;--mut:#5b6b68;--card:#fff;--line:#9fb0ad;--acc:#0f766e;--accfg:#fff;--ok:#0f766e;--warn:#92400e;--warnbg:#fef3c7}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--fg:#e6efed;--mut:#93a5a1;--card:#17211f;--line:#5d7571;--acc:#2dd4bf;--accfg:#04201c;--ok:#2dd4bf;--warn:#fde68a;--warnbg:#3a2e0c}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
 main{max-width:640px;margin:0 auto}
@@ -22,12 +22,13 @@ h1{font-size:1.4rem;margin:8px 0 2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
 textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:10px;padding:10px;background:transparent;color:var(--fg);font:inherit;resize:vertical}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-button{font:inherit;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer}
+button{font:inherit;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer}
 button.p{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:600}
 .out{word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:.95rem;padding:10px;border-radius:10px;background:var(--bg)}
 .lab{font-size:.8rem;color:var(--mut);margin:0 0 4px}
 .ok{color:var(--ok);font-size:.9rem;min-height:1.4em;margin-top:8px}
 .note{background:var(--warnbg);color:var(--warn);padding:8px 10px;border-radius:10px;font-size:.9rem;margin-top:8px}
+details+details{border-top:1px solid var(--line)}
 details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
 details p,details li{color:var(--mut);font-size:.92rem}
 ol{padding-left:1.2em;margin:6px 0}
